@@ -1,7 +1,8 @@
+import 'package:f_note/Pages/NotePage.dart';
 import 'package:flutter/material.dart';
-import '/pages/NotePage.dart';
-import '/pages/HomePage.dart';
+
 import '/pages/EditorPage.dart';
+import '/pages/HomePage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,20 +23,30 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const HomePage(),
-        '/editor': (context) => const EditorPage(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/note') {
-          final args = settings.arguments as Map<String, dynamic>;
-          final String title = args['title'] ?? '';
-          final String text = args['text'] ?? '';
+          final args = settings.arguments as Map<String, String>;
+          final title = args['fileName'] as String;
+          final path = args['filePath'] as String;
           return MaterialPageRoute(
-            builder: (context) {
-              return NotePage(title: title, text: text);
-            },
+            builder: (context) => NotePage(title: title, path: path),
           );
         }
-        // 其他路由配置
+        if (settings.name == '/editor') {
+          if (settings.arguments == null) {
+            return MaterialPageRoute(
+              builder: (context) => const EditorPage(),
+            );
+          }
+          final args = settings.arguments as Map<String, String>;
+          final title = args['fileName'] as String;
+          final text = args['context'] as String;
+             print('title: $title, text: $text');
+          return MaterialPageRoute(
+            builder: (context) => EditorPage(title: title, text: text),
+          );
+        }
         return null;
       },
     );

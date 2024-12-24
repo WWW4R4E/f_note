@@ -1,33 +1,37 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'ReadPage.dart';
+
+import '../widgets/ReadPage.dart';
 
 class NotePage extends StatelessWidget {
   final String title;
-  final String text;
-  const NotePage({super.key, required this.title, required this.text});
+  final String path;
+  const NotePage({
+    super.key,
+    required this.title,
+    required this.path,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final file = File(path);
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(title),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.save),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.change_circle_outlined),
-            onPressed: () {
-              
-            },
-          ),
-        ],
-      ),
-      body: ReadPage(title: title, text: text)
-    );
+        appBar: AppBar(
+          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+          title: Text(title),
+          actions: [
+            IconButton(
+              icon: Icon(Icons.edit),
+              onPressed: () {
+                Navigator.pushNamed(context, '/editor', arguments: {
+                  'fileName': title,
+                  'context': File(path).readAsStringSync()
+                });
+              },
+            ),
+          ],
+        ),
+        body: ReadPage(title: title, text: file.readAsStringSync()));
   }
 }

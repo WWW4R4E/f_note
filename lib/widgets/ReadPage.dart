@@ -7,14 +7,11 @@ class ReadPage extends StatelessWidget {
   final String title;
   final String text;
 
-  ReadPage({Key? key, required this.title, required this.text}) : super(key: key);
+  const ReadPage({super.key, required this.title, required this.text});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text(title),
-      // ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Markdown(
