@@ -26,20 +26,25 @@ class WritePage extends StatelessWidget {
               onChanged: onTitleChanged,
               decoration: const InputDecoration(
                 hintText: '请输入标题',
-                border: OutlineInputBorder(),
+                border: InputBorder.none, // 移除边框
               ),
             ),
-            const SizedBox(height: 16.0),
+            // 生成分割线
+            Divider(
+              height: 10,
+              thickness: 1,
+            ),
             Expanded(
               child: TextField(
                 controller: textController,
                 onChanged: onTextChanged,
                 decoration: const InputDecoration(
                   hintText: '请输入Markdown源码',
-                  border: OutlineInputBorder(),
+                  border: InputBorder.none, // 移除边框
                 ),
                 maxLines: null,
                 expands: true,
+                textAlignVertical: TextAlignVertical.top,
               ),
             ),
           ],

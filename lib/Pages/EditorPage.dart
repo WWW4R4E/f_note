@@ -3,12 +3,13 @@ import 'dart:io';
 import 'package:f_note/widgets/ReadPage.dart';
 import 'package:f_note/widgets/WritePage.dart';
 import 'package:flutter/material.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class EditorPage extends StatefulWidget {
   final String? title;
   final String? text;
+
   const EditorPage({super.key, this.title, this.text});
 
   @override
@@ -25,52 +26,90 @@ class _EditorPageState extends State<EditorPage> {
   @override
   void initState() {
     super.initState();
-    if (widget.title != null &&
-        widget.title!.isNotEmpty &&
-        widget.text != null &&
-        widget.text!.isNotEmpty) {
-      _title = widget.title;
-      _text = widget.text;
-    }
-    _titleController = TextEditingController();
-    _textController = TextEditingController();
-    _loadData();
+    _titleController = TextEditingController(text: widget.title);
+    _textController = TextEditingController(text: widget.text);
+    _title = widget.title;
+    _text = widget.text;
   }
 
-  String? getSavedTitle(SharedPreferences prefs, String? defaultTitle) {
+  Future<void> _saveFile() async {
     try {
-      return prefs.getString('saved_title') ?? defaultTitle;
+      if (_title == null ||
+          _title!.isEmpty ||
+          _text == null ||
+          _text!.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('标题和内容不能为空')),
+        );
+        return;
+      }
+
+      // 获取文件保存路径
+      final directory = await getApplicationDocumentsDirectory();
+      final fnoteDir = p.join(directory.path, 'Fnote');
+
+      // 确保 Fnote 文件夹存在
+      final dir = Directory(fnoteDir);
+      if (!await dir.exists()) {
+        await dir.create(recursive: true);
+      }
+
+      // 清理文件名中的非法字符
+      String cleanTitle =
+          _title?.replaceAll(RegExp(r'[\\/:*?"<>|]'), '_') ?? 'untitled';
+
+      // 进一步清理文件名中的其他潜在非法字符（如换行符等）
+      cleanTitle = cleanTitle.replaceAll(RegExp(r'[\n\r\t]'), '_').trim();
+
+      final filePath = p.join(fnoteDir, '$cleanTitle.md');
+      final file = File(filePath);
+
+      // 检查文件是否存在
+      if (await file.exists()) {
+        final shouldOverwrite = await showDialog<bool>(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('文件已存在'),
+            content: Text('是否覆盖现有文件？'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text('取消'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text('覆盖'),
+              ),
+            ],
+          ),
+        );
+
+        if (shouldOverwrite != true) {
+          return;
+        }
+      }
+
+      // 创建文件并写入内容
+      print('Saving file: $filePath');
+      await file.writeAsString(_text ?? '');
+
+      // 显示保存成功提示
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('文件保存成功')),
+      );
     } catch (e) {
-      print('Error loading saved title: $e');
-      return defaultTitle;
+      // 分类处理异常
+      if (e is FileSystemException) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('文件系统错误，请检查权限')),
+        );
+      } else {
+        print('文件保存失败: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('文件保存失败，请重试')),
+        );
+      }
     }
-  }
-
-  String? getSavedText(SharedPreferences prefs, String? defaultText) {
-    try {
-      return prefs.getString('saved_text') ?? defaultText;
-    } catch (e) {
-      print('Error loading saved text: $e');
-      return defaultText;
-    }
-  }
-
-  Future<void> _loadData() async {
-    final prefs = await SharedPreferences.getInstance();
-    final loadedTitle = getSavedTitle(prefs, widget.title);
-    final loadedText = getSavedText(prefs, widget.text);
-    setState(() {
-      _title = loadedTitle;
-      _text = loadedText;
-      _titleController.text = loadedTitle ?? ''; // 更新标题控制器文本
-      _textController.text = loadedText ?? ''; // 更新文本控制器文本
-    });
-  }
-
-  Future<void> _saveData() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('saved_title', _title ?? '');
-    await prefs.setString('saved_text', _text ?? '');
   }
 
   @override
@@ -78,13 +117,14 @@ class _EditorPageState extends State<EditorPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text('写作页面'),
         actions: [
           IconButton(
-              icon: Icon(Icons.save_alt_outlined),
-              onPressed: () {
-                saveFile();
-              }),
+            icon: Icon(Icons.save_alt_outlined),
+            onPressed: () async {
+              await _saveFile();
+              Navigator.pop(context);
+            },
+          ),
           IconButton(
             icon: Icon(Icons.change_circle_outlined),
             onPressed: () {
@@ -102,11 +142,9 @@ class _EditorPageState extends State<EditorPage> {
               textController: _textController,
               onTitleChanged: (value) {
                 _title = value;
-                _saveData();
               },
               onTextChanged: (value) {
                 _text = value;
-                _saveData();
               },
             ),
     );
@@ -117,42 +155,5 @@ class _EditorPageState extends State<EditorPage> {
     _titleController.dispose(); // 清理标题控制器资源
     _textController.dispose(); // 清理文本控制器资源
     super.dispose();
-  }
-
-// 将文件保存成md文件
-  Future<void> saveFile() async {
-    try {
-      // 获取文件保存路径
-      final directory = await getApplicationDocumentsDirectory();
-      final fnoteDir = '${directory.path}/Fnote';
-
-      // 确保 Fnote 文件夹存在
-      final dir = Directory(fnoteDir);
-      if (!await dir.exists()) {
-        await dir.create(recursive: true);
-      }
-
-      final filePath = '$fnoteDir/$_title.md';
-
-      // 创建文件并写入内容
-      final file = File(filePath);
-      await file.writeAsString('\n\n$_text');
-      _title = '';
-      _title = '';
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove('saved_title');
-      await prefs.remove('saved_text');
-
-      // 显示保存成功提示
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('文件保存成功')),
-      );
-    } catch (e) {
-      // 显示保存失败提示
-      print('文件保存失败: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('文件保存失败，请重试')),
-      );
-    }
   }
 }
