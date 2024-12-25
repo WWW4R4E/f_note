@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:f_note/provider/ThemNotifier.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -8,15 +7,16 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 
 class SettingPage extends StatelessWidget {
+  const SettingPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("设置"),
+        title: const Text('设置'),
       ),
       body: ListView(
-        padding: EdgeInsets.all(16.0),
-        children: <Widget>[
+        children: [
           ListTile(
             title: const Text("是否跟随系统主题"),
             trailing: Consumer<ThemeNotifier>(

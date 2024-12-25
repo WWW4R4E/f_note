@@ -34,7 +34,7 @@ class GlobalThemData {
     primary: Color.fromARGB(255, 210, 189, 81),
     onPrimary: Color.fromARGB(122, 0, 0, 0),
     secondary: Color(0xFFEFF3F3),
-    onSecondary: Color(0xFF322942),
+    onSecondary: Color.fromARGB(121, 201, 221, 219),
     error: Color.fromARGB(102, 131, 173, 4),
     onError: Colors.white,
     surface: Color(0xFFFAFBFB),

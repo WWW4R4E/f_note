@@ -28,7 +28,7 @@ class _HomePageState extends State<HomePage>
   Future<void> _loadNotes() async {
     final directory = await getApplicationDocumentsDirectory();
     final fnoteDir = Directory('${directory.path}/Fnote');
-    print("扫描了目录: ${fnoteDir.path}");
+    // print("扫描了目录: ${fnoteDir.path}");
     if (await fnoteDir.exists()) {
       final files = fnoteDir.listSync();
       setState(() {
@@ -71,27 +71,28 @@ class _HomePageState extends State<HomePage>
               onPressed: _deleteSelectedNotes,
             )
         ],
-        bottom: PreferredSize(
-          preferredSize: Size.fromHeight(48.0),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: '搜索...',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0), // 设置圆角半径
-                  borderSide: BorderSide.none,
-                ),
-                filled: true,
-                fillColor: const Color.fromARGB(90, 117, 117, 117),
-                enabledBorder: null,
-                contentPadding:
-                    EdgeInsets.symmetric(vertical: 0.0, horizontal: 8.0),
-              ),
-            ),
-          ),
-        ),
+        // bottom: PreferredSize(
+        //   preferredSize: Size.fromHeight(56.0),
+        //   child: Padding(
+        //     padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+        //     child: TextField(
+        //       decoration: InputDecoration(
+        //         hintText: '搜索...',
+        //         border: OutlineInputBorder(
+        //           borderRadius: BorderRadius.circular(8.0), // 设置圆角半径
+        //           borderSide: BorderSide.none,
+        //         ),
+        //         filled: true,
+        //         fillColor: const Color.fromARGB(90, 117, 117, 117),
+        //         enabledBorder: null,
+        //         contentPadding:
+        //             EdgeInsets.symmetric(vertical: 0.0, horizontal: 8.0),
+        //       ),
+        //     ),
+        //   ),
+        // ),
         title: const Text('笔记'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: _noteTitles.isEmpty
           ? Center(child: Text('快来写笔记吧！'))
@@ -100,7 +101,8 @@ class _HomePageState extends State<HomePage>
               itemBuilder: (context, index) {
                 final isSelected = _selectedIndices.contains(index);
                 return Card(
-                  shadowColor: Colors.white,
+                  shadowColor: Theme.of(context).colorScheme.onSecondary,
+                  color: Theme.of(context).colorScheme.onSecondary,
                   margin: const EdgeInsets.all(8.0),
                   child: ListTile(
                     title: Text(_noteTitles[index]['fileName'] ?? '未知标题'),
@@ -170,7 +172,7 @@ class _HomePageState extends State<HomePage>
       await _loadNotes(); // 重新加载笔记列表
     } catch (e) {
       // 处理删除过程中出现的异常
-      print('删除笔记时出错: $e');
+      // print('删除笔记时出错: $e');
     }
   }
 
