@@ -26,7 +26,6 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeNotifier>(
       builder: (context, themeNotifier, child) {
         return MaterialApp(
-          title: '笔记',
           theme: GlobalThemData.lightThemeData(themeNotifier.fontSize),
           darkTheme: GlobalThemData.darkThemeData(themeNotifier.fontSize),
           themeMode: themeNotifier.themeMode,
