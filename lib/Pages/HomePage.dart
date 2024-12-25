@@ -54,6 +54,12 @@ class _HomePageState extends State<HomePage>
               _loadNotes();
             },
           ),
+          IconButton(
+            icon: Icon(Icons.settings),
+            onPressed: () {
+              Navigator.pushNamed(context, '/setting');
+            },
+          ),
           if (_noteTitles.isNotEmpty)
             IconButton(
               icon: Icon(_isMultiSelect ? Icons.close : Icons.check_box),

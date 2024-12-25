@@ -1,13 +1,23 @@
 import 'package:f_note/Pages/NotePage.dart';
+import 'package:f_note/Pages/SettingPage.dart';
 import 'package:f_note/Theme.dart';
+import 'package:f_note/provider/ThemNotifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:provider/provider.dart';
 
 import '/pages/EditorPage.dart';
 import '/pages/HomePage.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => ThemeNotifier()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -15,11 +25,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final themeNotifier = Provider.of<ThemeNotifier>(context);
     return MaterialApp(
       title: '笔记',
-      theme: GlobalThemData.lightThemeData,
-      themeMode: ThemeMode.system,
-      darkTheme: GlobalThemData.darkThemeData,
+      themeMode: themeNotifier.themeMode,
+      theme: GlobalThemData.lightThemeData(themeNotifier.fontSize),
+      darkTheme: GlobalThemData.darkThemeData(themeNotifier.fontSize),
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -32,6 +43,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const HomePage(),
+        '/setting': (context) => SettingPage(),
       },
       onGenerateRoute: (settings) {
         if (settings.name == '/note') {

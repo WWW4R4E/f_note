@@ -5,14 +5,16 @@ class GlobalThemData {
   static final Color _darkFocusColor = Colors.white.withOpacity(0.12);
 
   /// 定义浅色模式主题
-  static ThemeData lightThemeData =
-      themeData(lightColorScheme, _lightFocusColor);
+  static ThemeData lightThemeData(double fontSize) =>
+      themeData(lightColorScheme, _lightFocusColor, fontSize);
 
   /// 定义深色模式主题
-  static ThemeData darkThemeData = themeData(darkColorScheme, _darkFocusColor);
+  static ThemeData darkThemeData(double fontSize) =>
+      themeData(darkColorScheme, _darkFocusColor, fontSize);
 
   /// 创建自定义主题数据
-  static ThemeData themeData(ColorScheme colorScheme, Color focusColor) {
+  static ThemeData themeData(
+      ColorScheme colorScheme, Color focusColor, double fontSize) {
     return ThemeData(
       colorScheme: colorScheme,
       // 设置背景颜色
@@ -22,6 +24,9 @@ class GlobalThemData {
       highlightColor: Colors.transparent,
       // 设置焦点颜色
       focusColor: focusColor,
+      textTheme: TextTheme(
+        bodyMedium: TextStyle(fontSize: fontSize),
+      ),
     );
   }
 

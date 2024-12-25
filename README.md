@@ -1,16 +1,8 @@
 # f_note
 
-A new Flutter project.
+一款及其简介的支持markdown的笔记软件(支持markdown的数学公式)
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 注
+目前搜索属于装样子的状态
+输入的语法必须是markdown的语法
+还有markdown的文字部分渲染有小问题，这个得等插件来解决。

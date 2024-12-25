@@ -30,6 +30,7 @@ class NotePage extends StatelessWidget {
                 });
               },
             ),
+            
           ],
         ),
         body: ReadPage(title: title, text: file.readAsStringSync()));
