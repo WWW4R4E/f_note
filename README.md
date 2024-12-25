@@ -1,4 +1,4 @@
-# f_note
+# 简记Markdown
 
 一款及其简介的支持markdown的笔记软件(支持markdown的数学公式)
 
